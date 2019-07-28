@@ -23,7 +23,7 @@ export default createGlobalStyle`
   }
 
   body, input, button {
-    font: 14px 'Lato', sans-serif;
+    font: 18px 'Lato', sans-serif;
   }
 
   a {
