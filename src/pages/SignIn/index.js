@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Form, Input } from '@rocketseat/unform';
 
-import logo from '~/assets/logo.svg';
+import Logo from '~/components/Logo';
 
 export default function SignIn() {
   function handleSubmit(data) {
@@ -11,7 +11,7 @@ export default function SignIn() {
 
   return (
     <>
-      <img src={logo} alt="MeetApp" />
+      <Logo />
 
       <Form onSubmit={handleSubmit}>
         <Input name="email" type="email" placeholder="Insert your e-mail" />
