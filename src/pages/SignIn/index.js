@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Form, Input } from '@rocketseat/unform';
 
+import schema from '~/validation/SignIn';
+
 import Logo from '~/components/Logo';
 
 export default function SignIn() {
@@ -13,7 +15,7 @@ export default function SignIn() {
     <>
       <Logo />
 
-      <Form onSubmit={handleSubmit}>
+      <Form schema={schema} onSubmit={handleSubmit}>
         <Input name="email" type="email" placeholder="Insert your e-mail" />
         <Input
           name="password"
