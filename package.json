@@ -47,6 +47,9 @@
     ]
   },
   "devDependencies": {
+    "@types/react": "^16.8.24",
+    "@types/react-router-dom": "^4.3.4",
+    "@types/styled-components": "^4.1.18",
     "customize-cra": "^0.4.1",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
