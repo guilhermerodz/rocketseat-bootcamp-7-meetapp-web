@@ -1,10 +1,12 @@
 import { takeLatest, call, put, all } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 
+import api from '~/services/api';
+
 import history from '~/services/history';
 import { signInSuccess, signUpSuccess, signFailure } from './actions';
 
-import api from '~/services/api';
+import { getError } from '~/util/errorHandler';
 
 export function* signIn({ payload }) {
   try {
@@ -17,12 +19,14 @@ export function* signIn({ payload }) {
 
     const { token, user } = response.data;
 
+    api.defaults.headers.Authorization = `Bearer ${token}`;
+
     yield put(signInSuccess(token, user));
 
     history.push('/dashboard');
   } catch (err) {
     toast.error(
-      err.response.data.error || 'Something is wrong... Check your credentials.'
+      getError(err) || 'Something is wrong... Check your credentials.'
     );
     yield put(signFailure());
   }
@@ -43,15 +47,22 @@ export function* signUp({ payload }) {
     history.push('/login');
     toast.success("Congratulations! You're registered!");
   } catch (err) {
-    toast.error(
-      err.response.data.error || 'Sorry, something is wrong. Try again later!'
-    );
+    toast.error(getError(err) || 'Sorry, something is wrong. Try again later!');
 
     yield put(signFailure());
   }
 }
 
+export function setToken({ payload }) {
+  if (!payload) return;
+
+  const { token } = payload.auth;
+
+  if (token) api.defaults.headers.Authorization = `Bearer ${token}`;
+}
+
 export default all([
+  takeLatest('persist/REHYDRATE', setToken),
   takeLatest('@auth/SIGN_IN_REQUEST', signIn),
   takeLatest('@auth/SIGN_UP_REQUEST', signUp),
 ]);
