@@ -2,7 +2,7 @@ import { takeLatest, call, put, all } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 
 import history from '~/services/history';
-import { signInSuccess, signFailure } from './actions';
+import { signInSuccess, signUpSuccess, signFailure } from './actions';
 
 import api from '~/services/api';
 
@@ -19,7 +19,7 @@ export function* signIn({ payload }) {
 
     yield put(signInSuccess(token, user));
 
-    history.push('dashboard');
+    history.push('/dashboard');
   } catch (err) {
     toast.error(
       err.response.data.error || 'Something is wrong... Check your credentials.'
@@ -28,4 +28,30 @@ export function* signIn({ payload }) {
   }
 }
 
-export default all([takeLatest('@auth/SIGN_IN_REQUEST', signIn)]);
+export function* signUp({ payload }) {
+  try {
+    const { name, email, password } = payload;
+
+    yield call(api.post, 'users', {
+      name,
+      email,
+      password,
+    });
+
+    yield put(signUpSuccess());
+
+    history.push('/login');
+    toast.success("Congratulations! You're registered!");
+  } catch (err) {
+    toast.error(
+      err.response.data.error || 'Sorry, something is wrong. Try again later!'
+    );
+
+    yield put(signFailure());
+  }
+}
+
+export default all([
+  takeLatest('@auth/SIGN_IN_REQUEST', signIn),
+  takeLatest('@auth/SIGN_UP_REQUEST', signUp),
+]);
