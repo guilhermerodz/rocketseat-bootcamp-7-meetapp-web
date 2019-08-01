@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { darken } from 'polished';
 
 import colors from '~/styles/colors';
 
@@ -55,6 +54,8 @@ export const Profile = styled.div`
   margin-right: 10px;
   margin-left: 20px;
   padding-left: 20px;
+
+  border-left: 1px solid #666;
 
   a {
     display: flex;
