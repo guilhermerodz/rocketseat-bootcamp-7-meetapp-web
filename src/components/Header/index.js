@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 
 import adorable from '~/services/adorable';
 
-import Logo from '~/components/Logo';
+import Notifications from '~/components/Notifications';
 
+import Logo from '~/components/Logo';
 import { Container, Content, Profile } from './styles';
 
 export default function Header() {
@@ -17,6 +18,8 @@ export default function Header() {
         </nav>
 
         <aside>
+          <Notifications />
+
           <Profile>
             <Link to="/profile">
               <strong>Guilherme Rodz</strong>
