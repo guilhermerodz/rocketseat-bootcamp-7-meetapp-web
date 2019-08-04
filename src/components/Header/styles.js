@@ -86,6 +86,7 @@ export const Profile = styled.div`
     margin-left: 10px;
 
     height: 32px;
+    width: 32px;
     border-radius: 50%;
   }
 `;
