@@ -1,18 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useStore } from 'react-redux';
+import React, { useState, useRef, useEffect } from 'react';
 import { useField } from '@rocketseat/unform';
 import { toast } from 'react-toastify';
+
+import { MdAddAPhoto } from 'react-icons/md';
 
 import api from '~/services/api';
 import { getError } from '~/util/errorHandler';
 
-import adorable from '~/services/adorable';
-
 import { Container } from './styles';
 
-export default function AvatarInput() {
-  const { defaultValue, registerField } = useField('avatar');
-  const fullName = useStore(state => state.user.profile.name);
+export default function BannerInput() {
+  const { defaultValue, registerField } = useField('banner');
+  const { error } = useField('banner_id');
 
   const [file, setFile] = useState(defaultValue && defaultValue.id);
   const [preview, setPreview] = useState(defaultValue && defaultValue.url);
@@ -22,7 +21,7 @@ export default function AvatarInput() {
   useEffect(() => {
     if (ref.current) {
       registerField({
-        name: 'avatar_id',
+        name: 'banner_id',
         ref: ref.current,
         path: 'dataset.file',
       });
@@ -33,7 +32,7 @@ export default function AvatarInput() {
     const data = new FormData();
 
     data.append('file', e.target.files[0]); // Gets only the first file
-    data.append('type', 'avatar');
+    data.append('type', 'banner');
 
     try {
       const response = await api.post('files', data);
@@ -49,18 +48,26 @@ export default function AvatarInput() {
 
   return (
     <Container>
-      <label htmlFor="avatar">
-        <img src={preview || adorable(fullName)} alt={fullName} />
+      <label htmlFor="banner">
+        {preview && <img src={preview} alt="Banner" />}
+
+        {!preview && (
+          <div className="icon-add">
+            <MdAddAPhoto size={48} color="rgba(255, 255, 255, .7)" />
+          </div>
+        )}
 
         <input
           type="file"
-          id="avatar"
+          id="banner"
           accept="image/*"
           data-file={file}
           onChange={handleChange}
           ref={ref}
         />
       </label>
+
+      {error && <span>{error}</span>}
     </Container>
   );
 }

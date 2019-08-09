@@ -3,4 +3,5 @@ export default {
   red: '#f94d6a',
   text: '#262626',
   cancel: '#211424',
+  dark: '#251e2c',
 };

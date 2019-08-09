@@ -4,6 +4,7 @@ import { MdNotifications } from 'react-icons/md';
 import { parseISO, formatDistance } from 'date-fns';
 import us from 'date-fns/locale/en-US';
 
+import history from '~/services/history';
 import api from '~/services/api';
 import adorable from '~/services/adorable';
 
@@ -15,7 +16,6 @@ import {
   NotificationList,
   Scroll,
   Notification,
-  LinkedNotification,
   NotificationPicture,
   NotificationContent,
 } from './styles';
@@ -30,6 +30,8 @@ export default function Notifications() {
   );
 
   useEffect(() => {
+    let isMounted = true;
+
     function getTimeDistance(time) {
       return formatDistance(parseISO(time), new Date(), {
         addSuffix: true,
@@ -42,6 +44,8 @@ export default function Notifications() {
         ...notification,
         timeDistance: getTimeDistance(notification.createdAt),
       }));
+
+      if (!isMounted) return;
 
       setNotifications(newData);
     }
@@ -60,6 +64,7 @@ export default function Notifications() {
 
     return () => {
       clearInterval(updateTask);
+      isMounted = false;
     };
   }, []);
 
@@ -69,10 +74,10 @@ export default function Notifications() {
 
   async function handleMarkAsRead(id) {
     const {
-      data: { id: success },
+      data: { _id: success },
     } = await api.put(`notifications/${id}`);
 
-    if (success)
+    if (success) {
       setNotifications(
         notifications.map(notification =>
           notification._id === id
@@ -80,6 +85,7 @@ export default function Notifications() {
             : notification
         )
       );
+    }
   }
 
   return (
@@ -90,68 +96,45 @@ export default function Notifications() {
 
       <NotificationList visible={visible}>
         <Scroll>
-          {notifications.map(notification => {
-            if (notification.redirects)
-              return (
-                <LinkedNotification
-                  key={notification._id}
-                  to={notification.redirects}
-                >
-                  {notification.picture && (
-                    <NotificationPicture
-                      src={
-                        notification.picture === 'adorable'
-                          ? adorable(notification.payload.adorable)
-                          : notification.picture
-                      }
-                      alt="Profile Picture"
-                    />
+          {notifications.map(notification => (
+            <Notification
+              type="button"
+              key={notification._id}
+              onClick={() => {
+                if (notification.redirects)
+                  history.push(notification.redirects);
+              }}
+              redirects={notification.redirects}
+            >
+              {notification.picture && (
+                <NotificationPicture
+                  src={
+                    notification.picture === 'adorable'
+                      ? adorable(notification.payload.adorable)
+                      : notification.picture
+                  }
+                  alt="Profile Picture"
+                />
+              )}
+              <NotificationContent unread={!notification.read}>
+                <p>{notification.content}</p>
+                <div>
+                  <time>{notification.timeDistance}</time>
+                  {!notification.read && (
+                    <button
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleMarkAsRead(notification._id);
+                      }}
+                      type="button"
+                    >
+                      Mark as read
+                    </button>
                   )}
-                  <NotificationContent unread={!notification.read}>
-                    <p>{notification.content}</p>
-                    <div>
-                      <time>{notification.timeDistance}</time>
-                      {!notification.read && (
-                        <button
-                          onClick={() => handleMarkAsRead(notification._id)}
-                          type="button"
-                        >
-                          Mark as read
-                        </button>
-                      )}
-                    </div>
-                  </NotificationContent>
-                </LinkedNotification>
-              );
-            return (
-              <Notification key={notification._id}>
-                {notification.picture && (
-                  <NotificationPicture
-                    src={
-                      notification.picture === 'adorable'
-                        ? adorable(notification.payload.adorable)
-                        : notification.picture
-                    }
-                    alt="Profile Picture"
-                  />
-                )}
-                <NotificationContent unread={!notification.read}>
-                  <p>{notification.content}</p>
-                  <div>
-                    <time>{notification.timeDistance}</time>
-                    {!notification.read && (
-                      <button
-                        onClick={() => handleMarkAsRead(notification._id)}
-                        type="button"
-                      >
-                        Mark as read
-                      </button>
-                    )}
-                  </div>
-                </NotificationContent>
-              </Notification>
-            );
-          })}
+                </div>
+              </NotificationContent>
+            </Notification>
+          ))}
         </Scroll>
       </NotificationList>
     </Container>

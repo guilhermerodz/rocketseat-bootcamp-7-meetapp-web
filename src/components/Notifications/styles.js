@@ -1,5 +1,4 @@
 import styled, { css } from 'styled-components';
-import { Link } from 'react-router-dom';
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
@@ -41,6 +40,8 @@ const listWidth = 320;
 export const NotificationList = styled.div.attrs(props => ({
   className: props.visible ? 'active' : '',
 }))`
+  z-index: 1;
+
   position: absolute;
   width: ${listWidth}px;
 
@@ -49,7 +50,7 @@ export const NotificationList = styled.div.attrs(props => ({
 
   background: #fff;
   border-radius: 12px;
-  padding: 15px 5px;
+  padding: 10px 5px;
 
   display: none;
   transition: opacity 0.3s ease-out;
@@ -81,34 +82,36 @@ export const Scroll = styled(PerfectScrollbar)`
   padding: 5px 15px;
 `;
 
-const notificationStyle = css`
+export const Notification = styled.div`
+  width: 100%;
+
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 
   color: ${colors.text};
+  padding: 10px 0;
+
+  border: 0;
+  background: none;
 
   & + div {
-    margin-top: 15px;
-    padding-top: 15px;
     border-top: 1px solid rgba(0, 0, 0, 0.2);
   }
-`;
 
-export const Notification = styled.div`
-  ${notificationStyle}
-`;
+  ${props =>
+    props.redirects &&
+    css`
+      transition: transform 0.3s, background 0.3s;
+      border-radius: 4px;
 
-export const LinkedNotification = styled(Link)`
-  ${notificationStyle}
+      &:hover {
+        cursor: pointer;
 
-  transition: transform .3s, background .3s;
-  border-radius: 4px;
-
-  &:hover {
-    transform: translateY(-2px);
-    background: #ededed;
-  }
+        transform: translateY(-2px);
+        background: #ededed;
+      }
+    `}
 `;
 
 export const NotificationPicture = styled.img`
@@ -122,29 +125,43 @@ export const NotificationPicture = styled.img`
 export const NotificationContent = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+
+  width: 100%;
 
   p {
     font-size: 16px;
     line-height: 18px;
   }
 
-  & > div {
+  > div {
+    position: relative;
+
     margin-top: 3px;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
 
+    width: 100%;
+
     time {
       font-size: 14px;
       opacity: 0.7;
     }
 
-    button {
+    > button {
+      position: relative;
+      z-index: 2;
+
       font-size: 14px;
       border: 0;
       background: none;
       opacity: 0.8;
+
+      &:hover {
+        cursor: grab;
+      }
     }
   }
 

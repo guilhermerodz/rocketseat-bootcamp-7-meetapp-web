@@ -6,6 +6,7 @@ import SignUp from '~/pages/SignUp';
 import SignIn from '~/pages/SignIn';
 
 import Dashboard from '~/pages/Dashboard';
+import Meetups from '~/pages/Meetups';
 import Profile from '~/pages/Profile';
 import Details from '~/pages/Details';
 import New from '~/pages/New';
@@ -18,6 +19,7 @@ export default function Routes() {
       <Route path="/login" component={SignIn} />
 
       <Route path="/dashboard" component={Dashboard} isPrivate />
+      <Route path="/meetups" component={Meetups} isPrivate />
       <Route path="/profile" component={Profile} isPrivate />
       <Route path="/details/:id" component={Details} isPrivate />
       <Route path="/new" component={New} isPrivate />

@@ -24,7 +24,6 @@ export default function Profile() {
 
   return (
     <Container>
-      {/* <Form schema={schema} onSubmit={handleSubmit}> */}
       <Form initialData={profile} onSubmit={handleSubmit}>
         <AvatarInput name="avatar_id" />
 
