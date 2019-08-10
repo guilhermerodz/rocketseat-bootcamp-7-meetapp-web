@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import us from 'date-fns/locale/en-US';
 import { MdFlag } from 'react-icons/md';
@@ -7,8 +6,8 @@ import { MdFlag } from 'react-icons/md';
 import api from '~/services/api';
 
 import Loading from '~/components/Loading';
-
-import { Container, Button, Meetup, NoMeetups } from './styles';
+import MeetupCard from '~/components/MeetupCard';
+import { Container, Button, NoMeetups } from './styles';
 
 const formatDate = d => format(d, "MMMM dd yyyy' at' H:mm aa", { locale: us });
 
@@ -70,19 +69,7 @@ export default function Meetups({ history }) {
             {meetups.length > 0 ? (
               <ul>
                 {meetups.map(meetup => (
-                  <Meetup key={String(meetup.id)}>
-                    <Link to={`details/${meetup.id}`}>
-                      {meetup.banner && (
-                        <div className="meetup-crop">
-                          <img src={meetup.banner.url} alt="Banner" />
-                        </div>
-                      )}
-                      <div className="meetup-info">
-                        <h2>{meetup.title}</h2>
-                        <time>{meetup.formattedDate}</time>
-                      </div>
-                    </Link>
-                  </Meetup>
+                  <MeetupCard meetup={meetup} />
                 ))}
               </ul>
             ) : (
