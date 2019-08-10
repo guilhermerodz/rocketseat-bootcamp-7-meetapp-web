@@ -25,6 +25,7 @@ import Loading from '~/components/Loading';
 
 import {
   Container,
+  GrayButton,
   RedButton,
   BlueButton,
   CancellationModal,
@@ -65,20 +66,24 @@ export default function Details({ history, match }) {
 
   useEffect(() => {
     async function loadMeetup() {
-      setLoading(true);
+      try {
+        setLoading(true);
 
-      const { data } = await api.get(`meetups/${id.value}`);
+        const { data } = await api.get(`meetups/${id.value}`);
 
-      data.formattedDate = formatDate(parseISO(data.date));
-      data.formattedDescription = formatDescription(data.description);
+        data.formattedDate = formatDate(parseISO(data.date));
+        data.formattedDescription = formatDescription(data.description);
 
-      if (!isMounted.current) return;
+        if (!isMounted.current) return;
 
-      setSubscribed(data.subscribed);
-      setMeetup(data);
-      setLoading(false);
+        setSubscribed(data.subscribed);
+        setMeetup(data);
+        setLoading(false);
 
-      delete data.subscribed;
+        delete data.subscribed;
+      } catch (err) {
+        toast.error(getError(err) || 'Internal server error!');
+      }
     }
 
     loadMeetup();
@@ -109,10 +114,10 @@ export default function Details({ history, match }) {
     try {
       await api.delete(`meetups/${id.value}`);
 
-      history.push('/');
+      history.push('/meetups');
       toast.warn('Meetup canceled.');
     } catch (err) {
-      toast.err(getError(err) || "Failed! Can't cancel your meetup.");
+      toast.error(getError(err) || "Failed! Can't cancel your meetup.");
     }
   }
 
@@ -171,20 +176,39 @@ export default function Details({ history, match }) {
         <>
           <Container animate={updateCount === 1}>
             <header>
-              <h1>{meetup.title}</h1>
-              <div>
-                {userId === meetup.owner.id && (
-                  <>
-                    <RedButton
-                      onClick={() => history.push(`/edit/${id.value}`)}
+              {!meetup.canceled_at ? (
+                <h1>{meetup.title}</h1>
+              ) : (
+                <>
+                  <div>
+                    <span
+                      style={{
+                        opacity: 0.6,
+                        color: '#525252',
+                        textDecoration: 'line-through',
+                      }}
                     >
-                      Edit
-                    </RedButton>
-                    <BlueButton onClick={() => setCancelModalOpen(true)}>
-                      Cancel
-                    </BlueButton>
-                  </>
-                )}
+                      <h1 style={{ color: '#eee' }}>{meetup.title}</h1>
+                    </span>
+                    <span className="canceled-tag">Canceled</span>
+                  </div>
+                </>
+              )}
+              <div>
+                {userId === meetup.owner.id &&
+                  !meetup.canceled_at &&
+                  !meetup.past && (
+                    <>
+                      <RedButton
+                        onClick={() => history.push(`/edit/${id.value}`)}
+                      >
+                        Edit
+                      </RedButton>
+                      <BlueButton onClick={() => setCancelModalOpen(true)}>
+                        Cancel
+                      </BlueButton>
+                    </>
+                  )}
               </div>
             </header>
             <div className="banner">
@@ -221,21 +245,27 @@ export default function Details({ history, match }) {
                 </div>
                 <div className="subscribe">
                   <div className="subscribe-actions">
-                    {!subscribed ? (
-                      <RedButton
-                        onClick={() => handleSubscribe(true)}
-                        type="button"
-                      >
-                        Subscribe
-                      </RedButton>
-                    ) : (
-                      <BlueButton
-                        onClick={() => handleSubscribe(false)}
-                        type="button"
-                      >
-                        Unsubscribe
-                      </BlueButton>
+                    {meetup.canceled_at && (
+                      <GrayButton type="button" disabled>
+                        Canceled
+                      </GrayButton>
                     )}
+                    {!meetup.canceled_at &&
+                      (!subscribed ? (
+                        <RedButton
+                          onClick={() => handleSubscribe(true)}
+                          type="button"
+                        >
+                          Subscribe
+                        </RedButton>
+                      ) : (
+                        <BlueButton
+                          onClick={() => handleSubscribe(false)}
+                          type="button"
+                        >
+                          Unsubscribe
+                        </BlueButton>
+                      ))}
                   </div>
                   <ul className="subscribers">
                     {meetup.subscribers.map(subscriber => (

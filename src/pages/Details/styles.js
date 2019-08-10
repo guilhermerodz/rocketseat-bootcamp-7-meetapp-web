@@ -77,8 +77,28 @@ export const Container = styled.div`
       margin-left: 10px;
     }
 
-    > h1 {
+    h1 {
       text-shadow: 4px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    > div {
+      display: flex;
+
+      .canceled-tag {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        margin-left: 10px;
+
+        padding: 6px 10px;
+
+        border-radius: 5px;
+
+        background: rgba(0, 0, 0, 0.1);
+        color: #fff;
+        font-size: 16px;
+      }
     }
   }
 
@@ -239,6 +259,8 @@ export const Container = styled.div`
     }
   }
 `;
+
+export const GrayButton = styled(createButton('#525252'))``;
 
 export const RedButton = styled(createButton(colors.red))``;
 
